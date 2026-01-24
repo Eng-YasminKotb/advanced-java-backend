@@ -39,7 +39,28 @@ public class MyHashMap<K, V> {
         }
     }
 
+    public void put(K key, V val){
+        int index=hash(key);
+        Node<K, V> node=table[index];
 
+        while(node!=null){
+            if(node.key.equals(key)){
+                node.value=val;
+                return;
+            }
+            node=node.next;
+        }
+        Node<K, V> newNode= new Node<>(key, val);
+        newNode.next=table[index];
+        table[index]=newNode;
+
+
+    }
+
+
+    private int hash(K key){
+        return key.hashCode() % capacity;
+    }
 
 
 
