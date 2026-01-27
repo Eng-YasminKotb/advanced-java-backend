@@ -72,6 +72,30 @@ public class MyHashMap<K, V> {
         return null;
     }
 
+    public void remove(K Key){
+        int index=hash(Key);
+        Node<K, V> node=table[index];
+        Node<K, V> prev=null;
+
+        while(node != null){
+            if(node.key.equals(key)){
+
+                if(prev == null){
+                    table[index] = node.next;
+                }
+                else{
+                    prev.next=node.next;
+                }
+                //size--;
+               //return;
+            }
+            prev = node;
+            node = node.next;
+        }
+
+    }
+
+
 
 
 
