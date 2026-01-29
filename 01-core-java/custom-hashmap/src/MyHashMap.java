@@ -1,13 +1,11 @@
-import javax.xml.bind.annotation.XmlType;
-
 public class MyHashMap<K, V> {
 
     private static final int DEFAULT_CAPACITY=16;
     private static final float DEFAULT_LOAD_FACTOR=0.75f;
 
     private int capacity;
-    private int size;
     private float loadFactor;
+    private int size;
     private Node<K, V>[] table;
 
 
@@ -21,8 +19,10 @@ public class MyHashMap<K, V> {
 
     // Constructor 2: With parameters
     public MyHashMap(int capacity, float loadFactor){
-        this.capacity=capacity;
-        this.loadFactor=loadFactor;
+        this.capacity = capacity;
+        this.loadFactor = loadFactor;
+        this.table = new Node[capacity];
+        this.size = 0;
 
     }
 
@@ -40,7 +40,9 @@ public class MyHashMap<K, V> {
     }
 
     private int hash(K key){
-        return key.hashCode() % capacity;
+        //Handling null keys
+        if(key == null) return 0;
+        return Math.abs(key.hashCode()) % capacity;
     }
 
     public void put(K key, V val){
@@ -57,7 +59,11 @@ public class MyHashMap<K, V> {
         Node<K, V> newNode= new Node<>(key, val);
         newNode.next=table[index];
         table[index]=newNode;
+        size++;
 
+        if( size > capacity * loadFactor){
+            resize();
+        }
 
     }
     public V get(K key){
@@ -72,8 +78,8 @@ public class MyHashMap<K, V> {
         return null;
     }
 
-    public void remove(K Key){
-        int index=hash(Key);
+    public void remove(K key){
+        int index=hash(key);
         Node<K, V> node=table[index];
         Node<K, V> prev=null;
 
@@ -86,8 +92,8 @@ public class MyHashMap<K, V> {
                 else{
                     prev.next=node.next;
                 }
-                //size--;
-               //return;
+                size--;
+                return;
             }
             prev = node;
             node = node.next;
@@ -95,6 +101,28 @@ public class MyHashMap<K, V> {
 
     }
 
+    private void resize(){
+        int newCapacity = capacity * 2;
+        Node<K, V>[]  newTable = new Node[newCapacity] ;
+
+        for(int i = 0; i < capacity ; i++){
+            Node<K, V> node=table[i];
+            while (node != null){
+                Node<K, V> next=node.next;
+                int index = Math.abs(node.key.hashCode())  % newCapacity ;
+                node.next = newTable[index];
+                newTable[index] = node;
+                node = next;
+            }
+        }
+        table = newTable;
+        capacity = newCapacity;
+    }
+
+
+    public int size() {
+        return size;
+    }
 
 
 
